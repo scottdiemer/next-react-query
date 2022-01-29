@@ -1,16 +1,14 @@
+import React from "react";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevTools } from "react-query/devtools";
 import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }) {
-  const [queryClient] = React.useState(() => new QueryClient());
-
+  const queryClient = React.useRef(new QueryClient());
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient.current}>
       <Hydrate state={pageProps.dehydratedState}>
         <Component {...pageProps} />
       </Hydrate>
-      <ReactQueryDevTools />
     </QueryClientProvider>
   );
 }
