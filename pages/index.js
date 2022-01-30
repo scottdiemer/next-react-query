@@ -1,6 +1,4 @@
-// import { ALL_CONTINENTS, useGQLQuery } from "../lib/products";
 import { dehydrate, QueryClient, useQuery } from "react-query";
-// import { gql, request } from "graphql-request";
 import { getCountries, getContinents } from "../lib/locations";
 import styles from "../styles/Home.module.css";
 
