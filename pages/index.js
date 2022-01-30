@@ -1,19 +1,11 @@
 // import { ALL_CONTINENTS, useGQLQuery } from "../lib/products";
 import { dehydrate, QueryClient, useQuery } from "react-query";
-import { gql, request } from "graphql-request";
+// import { gql, request } from "graphql-request";
+import { getCountries, getContinents } from "../lib/locations";
 import styles from "../styles/Home.module.css";
 
-const ALL_CONTINENTS = gql`
-  {
-    continents {
-      name
-      code
-    }
-  }
-`;
-
-const getContinents = async () =>
-  await await request("https://countries.trevorblades.com/", ALL_CONTINENTS);
+// const getcontinents = async () =>
+//   await await request("https://countries.trevorblades.com/", all_continents);
 
 // const getContinents = async () =>
 //   await (
@@ -35,20 +27,27 @@ const getContinents = async () =>
 // await (await fetch("https://api.spacexdata.com/v4/launches/latest")).json();
 
 export default function Home() {
-  const { data, error } = useQuery("countries", getContinents);
-  console.log(data);
-  // const {
-  //   data: { countries },
-  // } = data;
-  // console.log("countries: ", countries);
+  const { data: continentsData, continentsError } = useQuery(
+    "continents",
+    getContinents
+  );
+  const { data: countriesData, countriesError } = useQuery(
+    "countries",
+    getCountries
+  );
 
-  error ? <div>Opps there was an error</div> : "";
-  if (!data) return <div>No data!</div>;
+  continentsError || countriesError ? <div>Oops there was an error</div> : "";
+  continentsData || countriesData ? <div>No data!</div> : "";
 
   return (
     <div className={styles.container}>
-      {data.continents.map((continent) => {
+      <h2>Continents</h2>
+      {continentsData.continents.map((continent) => {
         return <p key={continent.name}>{continent.name}</p>;
+      })}
+      <h2>Countries</h2>
+      {countriesData.countries.map((country) => {
+        return <p key={country.name}>{country.name}</p>;
       })}
     </div>
   );
@@ -57,7 +56,9 @@ export default function Home() {
 export async function getStaticProps() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery("countries", getContinents);
+  await queryClient
+    .prefetchQuery("continents", getContinents)
+    .then(await queryClient.prefetchQuery("countries", getCountries));
 
   return {
     props: {
